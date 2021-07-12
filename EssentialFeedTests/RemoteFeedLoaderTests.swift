@@ -48,18 +48,11 @@ class RemoteFeedLoaderTests: XCTestCase {
         
         //Given
         let (sut,client) = makeSUT()
-        var capturedErrors = [RemoteFeedLoader.Error]()
         
-        //When
-        sut.load{ error in
-            capturedErrors.append(error)
+        expect(sut, toCompleteWithError: .connectivity) {
+            let clientError = NSError(domain: "Error", code: 0)
+            client.complete(with: clientError)
         }
-        
-        let clientError = NSError(domain: "Error", code: 0)
-        client.complete(with: clientError)
-        
-        //Assert
-        XCTAssertEqual(capturedErrors, [.connectivity])
     
     }
     
@@ -70,17 +63,9 @@ class RemoteFeedLoaderTests: XCTestCase {
         let responseSample = [199,201,300,400,500]
         
         responseSample.enumerated().forEach { index,response in
-            var capturedErrors = [RemoteFeedLoader.Error]()
-            
-            //When
-            sut.load{ error in
-                capturedErrors.append(error)
+            expect(sut, toCompleteWithError: .invalidData) {
+                client.complete(withStatusCode: response, at: index)
             }
-            
-            client.complete(withStatusCode: response, at: index)
-            
-            //Assert
-            XCTAssertEqual(capturedErrors, [.invalidData])
         }
     }
     
@@ -89,6 +74,14 @@ class RemoteFeedLoaderTests: XCTestCase {
         //Given
         let (sut,client) = makeSUT()
         
+        expect(sut, toCompleteWithError: .invalidData) {
+            let invalidJSON = Data("invalid json".utf8)
+            client.complete(withStatusCode: 200, data: invalidJSON)
+        }
+    }
+    
+    private func expect(_ sut: RemoteFeedLoader, toCompleteWithError error: RemoteFeedLoader.Error, when action: () -> (), file :StaticString = #file, line: UInt = #line){
+        
         var capturedErrors = [RemoteFeedLoader.Error]()
         
         //When
@@ -96,11 +89,10 @@ class RemoteFeedLoaderTests: XCTestCase {
             capturedErrors.append(error)
         }
         
-        let invalidJSON = Data("invalid json".utf8)
-        client.complete(withStatusCode: 200, data: invalidJSON)
+        action()
         
         //Assert
-        XCTAssertEqual(capturedErrors, [.invalidData])
+        XCTAssertEqual(capturedErrors, [error], file: file, line: line)
         
     }
     
