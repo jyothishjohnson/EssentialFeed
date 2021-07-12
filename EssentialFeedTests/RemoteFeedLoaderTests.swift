@@ -80,6 +80,26 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
+    func test_load_deliversNoItemsOnNon200HTTPResponseWithEmptyJSONList(){
+        
+        //Given
+        let (sut,client) = makeSUT()
+        
+        var capturedErrors = [Result<[FeedItem],RemoteFeedLoader.Error>]()
+
+        sut.load{ result in
+            
+            capturedErrors.append(result)
+        }
+        
+        let emptyListJSON = Data("{\"items\":[]}".utf8)
+        client.complete(withStatusCode: 200, data: emptyListJSON)
+        
+        //Assert
+        XCTAssertEqual(capturedErrors, [.success([])])
+        
+    }
+    
     private func expect(_ sut: RemoteFeedLoader, toCompleteWithError error: RemoteFeedLoader.Error, when action: () -> (), file :StaticString = #file, line: UInt = #line){
         
         var capturedErrors = [Result<[FeedItem],RemoteFeedLoader.Error>]()
