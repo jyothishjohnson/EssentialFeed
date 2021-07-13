@@ -48,8 +48,12 @@ public final class RemoteFeedLoader {
 
 private struct FeedItemsMapper {
     
+    enum ResponseCode : Int {
+        case OK_200 = 200
+    }
+    
     static func map(with data: Data, response: HTTPURLResponse) -> [FeedItem]? {
-        guard response.statusCode == 200 else {
+        guard response.statusCode == ResponseCode.OK_200.rawValue else {
             return nil
         }
         
