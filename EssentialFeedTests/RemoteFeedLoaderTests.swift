@@ -64,7 +64,8 @@ class RemoteFeedLoaderTests: XCTestCase {
         
         responseSample.enumerated().forEach { index,response in
             expect(sut, toCompleteWithResult: .failure(.invalidData)) {
-                client.complete(withStatusCode: response, at: index)
+                let responseJSON = mapToJsonData(with: [])
+                client.complete(withStatusCode: response, at: index, data: responseJSON)
             }
         }
     }
@@ -98,8 +99,8 @@ class RemoteFeedLoaderTests: XCTestCase {
         let item1 = FeedItem(id: UUID(), imageURL: URL(string: "https://url.com")!)
         let item2 = FeedItem(id: UUID(), imageURL: URL(string: "https://url2.com")!, desc: "description", location: "location")
         
-        let json = mapJson(with: [item1,item2])
-    
+        let json = mapToJsonData(with: [item1,item2])
+        
         expect(sut, toCompleteWithResult: .success([item1,item2])) {
             let feedItems = json
             client.complete(withStatusCode: 200, data: feedItems)
@@ -109,7 +110,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     
     //MARK: helper functions
     
-    private func mapJson(with items: [FeedItem]) -> Data {
+    private func mapToJsonData(with items: [FeedItem]) -> Data {
         
         let response = FeedResponse(items: items)
         return try! JSONEncoder().encode(response)
@@ -159,7 +160,7 @@ class RemoteFeedLoaderTests: XCTestCase {
             messages[index].completion(.failure(error))
         }
         
-        func complete(withStatusCode code : Int, at index : Int = 0, data : Data = Data()){
+        func complete(withStatusCode code : Int, at index : Int = 0, data : Data){
             
             let response = HTTPURLResponse(url: requestedURLs[index], statusCode: code, httpVersion: nil, headerFields: nil)
             
