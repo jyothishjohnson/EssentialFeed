@@ -91,6 +91,30 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
+    func test_load_deliversNoItemsOnNon200HTTPResponseWithJSONItems(){
+        
+        //Given
+        let (sut,client) = makeSUT()
+        let item1 = FeedItem(id: UUID(), imageURL: URL(string: "https://url.com")!)
+        let item2 = FeedItem(id: UUID(), imageURL: URL(string: "https://url2.com")!, desc: "description", location: "location")
+        
+        let json = mapJson(with: [item1,item2])
+    
+        expect(sut, toCompleteWithResult: .success([item1,item2])) {
+            let feedItems = json
+            client.complete(withStatusCode: 200, data: feedItems)
+        }
+    }
+    
+    
+    //MARK: helper functions
+    
+    private func mapJson(with items: [FeedItem]) -> Data {
+        
+        let response = FeedResponse(items: items)
+        return try! JSONEncoder().encode(response)
+    }
+
     private func expect(_ sut: RemoteFeedLoader, toCompleteWithResult result: Result<[FeedItem],RemoteFeedLoader.Error>, when action: () -> (), file :StaticString = #file, line: UInt = #line){
         
         var capturedErrors = [Result<[FeedItem],RemoteFeedLoader.Error>]()
