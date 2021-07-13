@@ -34,7 +34,7 @@ public final class RemoteFeedLoader {
             case .success((let(response,data))):
                 
                 if response.statusCode == 200, let response = try? JSONDecoder().decode(FeedResponse.self, from: data) {
-                    completion(.success(response.items))
+                    completion(.success(response.items.map{ $0.feedItem }))
                 }else {
                     completion(.failure(.invalidData))
                 }
@@ -43,5 +43,31 @@ public final class RemoteFeedLoader {
                 completion(.failure(.connectivity))
             }
         }
+    }
+}
+
+public struct FeedResponse: Codable{
+    public let items : [Item]
+    
+    public init(items: [Item] = []){
+        self.items = items
+    }
+}
+
+public struct Item: Codable {
+    public let id : UUID
+    public let image : URL
+    public let description : String?
+    public let location : String?
+    
+    public init(id: UUID, image: URL, desc: String? = nil, location: String? = nil){
+        self.id = id
+        self.image = image
+        self.description = desc
+        self.location = location
+    }
+    
+    public var feedItem : FeedItem {
+        return FeedItem(id: id, imageURL: image, desc: description, location: location)
     }
 }

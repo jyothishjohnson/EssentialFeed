@@ -96,12 +96,12 @@ class RemoteFeedLoaderTests: XCTestCase {
         
         //Given
         let (sut,client) = makeSUT()
-        let item1 = FeedItem(id: UUID(), imageURL: URL(string: "https://url.com")!)
-        let item2 = FeedItem(id: UUID(), imageURL: URL(string: "https://url2.com")!, desc: "description", location: "location")
+        let item1 = Item(id: UUID(), image: URL(string: "https://url.com")!)
+        let item2 = Item(id: UUID(), image: URL(string: "https://url2.com")!, desc: "description", location: "location")
         
         let json = mapToJsonData(with: [item1,item2])
         
-        expect(sut, toCompleteWithResult: .success([item1,item2])) {
+        expect(sut, toCompleteWithResult: .success([item1.feedItem,item2.feedItem])) {
             let feedItems = json
             client.complete(withStatusCode: 200, data: feedItems)
         }
@@ -110,7 +110,7 @@ class RemoteFeedLoaderTests: XCTestCase {
     
     //MARK: helper functions
     
-    private func mapToJsonData(with items: [FeedItem]) -> Data {
+    private func mapToJsonData(with items: [Item]) -> Data {
         
         let response = FeedResponse(items: items)
         return try! JSONEncoder().encode(response)

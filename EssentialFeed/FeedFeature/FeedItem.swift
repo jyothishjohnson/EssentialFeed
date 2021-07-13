@@ -20,21 +20,3 @@ public struct FeedItem: Equatable, Codable {
         self.location = location
     }
 }
-
-extension FeedItem {
-    
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case description
-        case location
-        case imageURL = "image"
-    }
-}
-
-public struct FeedResponse: Codable{
-    public let items : [FeedItem]
-    
-    public init(items: [FeedItem] = []){
-        self.items = items
-    }
-}
