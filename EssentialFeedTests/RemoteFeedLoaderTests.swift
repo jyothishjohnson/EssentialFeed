@@ -107,6 +107,24 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
+    func test_doesNotDeliverResultAfterSUTHasBeenDeallocated(){
+        
+        var (sut,client) : (RemoteFeedLoader?,HTTPClientSpy) = makeSUT()
+        
+        let json = mapToJsonData(with: [])
+        
+        var capturedResults = [Result<[FeedItem],RemoteFeedLoader.Error>]()
+        
+        sut?.load { result in
+            capturedResults.append(result)
+        }
+        sut = nil
+        
+        client.complete(withStatusCode: 200, data: json)
+        
+        XCTAssertEqual(capturedResults,[])
+    }
+    
     
     //MARK: helper functions
     
