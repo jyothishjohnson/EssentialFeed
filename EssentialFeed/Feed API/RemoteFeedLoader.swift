@@ -7,11 +7,6 @@
 
 import Foundation
 
-public protocol HTTPClient{
-            
-    func get(from url : URL, completion : @escaping (Result<(HTTPURLResponse,Data), Error>) -> ())
-}
-
 public final class RemoteFeedLoader {
     
     private let client : HTTPClient
