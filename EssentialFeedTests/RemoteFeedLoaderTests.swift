@@ -116,7 +116,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         return try! JSONEncoder().encode(response)
     }
 
-    private func expect(_ sut: RemoteFeedLoader, toCompleteWithResult result: Result<[FeedItem],RemoteFeedLoader.Error>, when action: () -> (), file :StaticString = #file, line: UInt = #line){
+    private func expect(_ sut: RemoteFeedLoader, toCompleteWithResult result: Result<[FeedItem],RemoteFeedLoader.Error>, when action: () -> (), file :StaticString = #filePath, line: UInt = #line){
         
         var capturedErrors = [Result<[FeedItem],RemoteFeedLoader.Error>]()
         
