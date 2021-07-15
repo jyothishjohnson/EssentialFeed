@@ -49,7 +49,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         //Given
         let (sut,client) = makeSUT()
         
-        expect(sut, toCompleteWithResult: .failure(RemoteFeedLoader.Error.connectivity)) {
+        expect(sut, toCompleteWithResult: failure(.connectivity)) {
             let clientError = NSError(domain: "Error", code: 0)
             client.complete(with: clientError)
         }
@@ -63,7 +63,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         let responseSample = [199,201,300,400,500]
         
         responseSample.enumerated().forEach { index,response in
-            expect(sut, toCompleteWithResult: .failure(RemoteFeedLoader.Error.invalidData)) {
+            expect(sut, toCompleteWithResult: failure(.invalidData)) {
                 let responseJSON = mapToJsonData(with: [])
                 client.complete(withStatusCode: response, at: index, data: responseJSON)
             }
@@ -75,7 +75,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         //Given
         let (sut,client) = makeSUT()
         
-        expect(sut, toCompleteWithResult: .failure(RemoteFeedLoader.Error.invalidData)) {
+        expect(sut, toCompleteWithResult: failure(.invalidData)) {
             let invalidJSON = Data("invalid json".utf8)
             client.complete(withStatusCode: 200, data: invalidJSON)
         }
@@ -86,7 +86,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         //Given
         let (sut,client) = makeSUT()
     
-        expect(sut, toCompleteWithResult: .success([])) {
+        expect(sut, toCompleteWithResult: success([])) {
             let emptyListJSON = mapToJsonData(with: [])
             client.complete(withStatusCode: 200, data: emptyListJSON)
         }
@@ -101,7 +101,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         
         let json = mapToJsonData(with: [item1,item2])
         
-        expect(sut, toCompleteWithResult: .success([item1.feedItem,item2.feedItem])) {
+        expect(sut, toCompleteWithResult: success([item1.feedItem,item2.feedItem])) {
             let feedItems = json
             client.complete(withStatusCode: 200, data: feedItems)
         }
@@ -176,6 +176,14 @@ class RemoteFeedLoaderTests: XCTestCase {
         addTeardownBlock { [weak instance] in
             XCTAssertNil(instance,"Potential Memory Leak", file: file, line: line)
         }
+    }
+    
+    private func failure(_ error : RemoteFeedLoader.Error) -> LoadFeedResult {
+        .failure(error)
+    }
+    
+    private func success(_ items : [FeedItem]) -> LoadFeedResult {
+        .success(items)
     }
     
     private class HTTPClientSpy: HTTPClient{
