@@ -13,11 +13,11 @@ internal struct FeedItemsMapper {
         case OK_200 = 200
     }
     
-    internal static func map(with data: Data, response: HTTPURLResponse) -> Result<[FeedItem],RemoteFeedLoader.Error> {
+    internal static func map(with data: Data, response: HTTPURLResponse) -> Result<[FeedItem],Error> {
         guard response.statusCode == ResponseCode.OK_200.rawValue,
               let rootResponse = try? JSONDecoder().decode(FeedResponse.self, from: data)
               else {
-            return .failure(.invalidData)
+            return .failure(RemoteFeedLoader.Error.invalidData)
         }
         
         return .success(rootResponse.feed)
