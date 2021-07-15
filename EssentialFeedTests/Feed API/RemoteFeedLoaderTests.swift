@@ -81,7 +81,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
-    func test_load_deliversNoItemsOnNon200HTTPResponseWithEmptyJSONList(){
+    func test_load_deliversNoItemsOn200HTTPResponseWithEmptyJSONList(){
         
         //Given
         let (sut,client) = makeSUT()
@@ -92,7 +92,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
-    func test_load_deliversNoItemsOnNon200HTTPResponseWithJSONItems(){
+    func test_load_deliversItemsOn200HTTPResponseWithJSONItems(){
         
         //Given
         let (sut,client) = makeSUT()
