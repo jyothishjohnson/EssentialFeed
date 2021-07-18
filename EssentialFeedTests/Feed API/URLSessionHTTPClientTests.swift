@@ -29,7 +29,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     
     func test_getsURL_failsOnRequestError(){
         
-        URLProtocol.registerClass(URLProtocolStub.self)
+        URLProtocolStub.startInterceptingRequest()
         let url = URL(string: "https://anyurl.com")!
         let error = NSError(domain: "error 101", code: 1)
         let sut = URLSessionHTTPClient()
@@ -50,12 +50,20 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
         
         wait(for: [expectation], timeout: 1.0)
-        URLProtocol.unregisterClass(URLProtocolStub.self)
+        URLProtocolStub.stopInterceptingRequests()
     }
     
     //MARK: helper methods
     
     private class URLProtocolStub: URLProtocol{
+        
+        static func startInterceptingRequest(){
+            URLProtocol.registerClass(URLProtocolStub.self)
+        }
+        
+        static func stopInterceptingRequests(){
+            URLProtocol.unregisterClass(URLProtocolStub.self)
+        }
         
         private static var stubs = [URL:Stub]()
         
