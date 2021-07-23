@@ -12,22 +12,7 @@ class EssentialFeedAPIEndToEndTests: XCTestCase {
 
     func test_endToEndTestServerGETFeedResult_matchesFixedTestAccountData(){
         
-        let serverURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
-        let client = URLSessionHTTPClient()
-        let loader = RemoteFeedLoader(client: client, url: serverURL)
-        
-        let exp = expectation(description: "wait for completion")
-        
-        var recievedResult : LoadFeedResult?
-        
-        loader.load { result in
-            recievedResult = result
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 15.0)
-        
-        switch recievedResult {
+        switch getFeedResult() {
         case .success(let items):
             XCTAssertEqual(items.count, 8,"Expected 8 items in the test account feed")
             
@@ -51,6 +36,26 @@ class EssentialFeedAPIEndToEndTests: XCTestCase {
     }
     
     //MARK: helper functions
+    
+    private func getFeedResult() -> LoadFeedResult? {
+        
+        let serverURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
+        let client = URLSessionHTTPClient()
+        let loader = RemoteFeedLoader(client: client, url: serverURL)
+        
+        let exp = expectation(description: "wait for completion")
+        
+        var recievedResult : LoadFeedResult?
+        
+        loader.load { result in
+            recievedResult = result
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 15.0)
+        
+        return recievedResult
+    }
     
     private func expectedItem(at index: Int) -> FeedItem {
         
