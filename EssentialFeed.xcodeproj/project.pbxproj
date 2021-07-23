@@ -14,6 +14,7 @@
 		4B82ECC226A5F38D00CC5A5D /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B82ECC126A5F38D00CC5A5D /* XCTestCase+MemoryLeakTracking.swift */; };
 		4BB61C0E26AB0F6800D90647 /* EssentialFeedAPIEndToEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BB61C0D26AB0F6800D90647 /* EssentialFeedAPIEndToEndTests.swift */; };
 		4BB61C1026AB0F6800D90647 /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BF13C4226948ED500C00155 /* EssentialFeed.framework */; };
+		4BB61C1626AB188600D90647 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B82ECC126A5F38D00CC5A5D /* XCTestCase+MemoryLeakTracking.swift */; };
 		4BC341F22696220D001E106B /* RemoteFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BC341F12696220D001E106B /* RemoteFeedLoader.swift */; };
 		4BF13C4C26948ED500C00155 /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BF13C4226948ED500C00155 /* EssentialFeed.framework */; };
 		4BF13C5326948ED500C00155 /* EssentialFeed.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF13C4526948ED500C00155 /* EssentialFeed.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -312,6 +313,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4BB61C0E26AB0F6800D90647 /* EssentialFeedAPIEndToEndTests.swift in Sources */,
+				4BB61C1626AB188600D90647 /* XCTestCase+MemoryLeakTracking.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
