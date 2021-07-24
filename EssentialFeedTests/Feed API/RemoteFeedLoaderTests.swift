@@ -138,7 +138,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         
         var capturedResults = [Result<[FeedItem],Error>]()
         
-        let expectation = expectation(description: "Wait for load completion")
+        let exp = expectation(description: "Wait for load completion")
         
         //When
         sut.load{ recievedResult in
@@ -153,11 +153,11 @@ class RemoteFeedLoaderTests: XCTestCase {
             default:
                 XCTFail("Expected \(expectedResult), recieved \(recievedResult)", file: file, line: line)
             }
-            expectation.fulfill()
+            exp.fulfill()
         }
         action()
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [exp], timeout: 1.0)
         
     }
     
