@@ -12,9 +12,9 @@ public final class RemoteFeedLoader: FeedLoader {
     private let client : HTTPClient
     private let url : URL
     
-    public init(client: HTTPClient, url : URL){
-        self.client = client
-        self.url = url
+    public init(client httpClient: HTTPClient, url loadURL: URL){
+        self.client = httpClient
+        self.url = loadURL
     }
     
     public enum Error : Swift.Error {
