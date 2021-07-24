@@ -149,11 +149,11 @@ class URLSessionHTTPClientTests: XCTestCase {
     private func anyError() -> NSError {
         return NSError(domain: "any error", code: 101)
     }
-    
+ 
     private func anyHTTPResponse() -> HTTPURLResponse {
-        return HTTPURLResponse(url: anyURL(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
+        return HTTPURLResponse(url: anyURL(), statusCode: 200, httpVersion: nil, headerFields: nil)!
     }
-    
+ 
     private func nonHTTPResponse() -> URLResponse {
         return URLResponse(url: anyURL(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
     }
