@@ -16,9 +16,9 @@ class LocalFeedLoader {
         self.currentDate = currentDate
     }
     
-    func save(_ items: [FeedItem]) {
+    func save(_ items: [FeedItem], completion : @escaping (Error?) -> ()) {
         store.deleteCachedFeed{ [unowned self] error in
-            
+            completion(error)
             if error == nil {
                 self.store.insert(items, withTimeStamp: self.currentDate())
             }
@@ -71,7 +71,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         let (sut,store) = makeSUT()
         let items : [FeedItem] = [uniqueFeedItem(), uniqueFeedItem()]
         
-        sut.save(items)
+        sut.save(items){ _ in }
         
         XCTAssertEqual(store.recievedMessages, [.deleteCacheMessage])
     }
@@ -82,7 +82,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         let items : [FeedItem] = [uniqueFeedItem(), uniqueFeedItem()]
         let deletionError = anyError()
         
-        sut.save(items)
+        sut.save(items){ _ in }
         store.completionDeletion(with: deletionError)
         
         XCTAssertEqual(store.recievedMessages, [.deleteCacheMessage])
@@ -94,10 +94,30 @@ class CacheFeedUseCaseTests: XCTestCase {
         let (sut,store) = makeSUT(currentDate: { timeStamp })
         let items : [FeedItem] = [uniqueFeedItem(), uniqueFeedItem()]
         
-        sut.save(items)
+        sut.save(items){ _ in }
         store.completionDeletionSuccessfully()
         
         XCTAssertEqual(store.recievedMessages, [.deleteCacheMessage, .insertCacheMessage(items: items, timeStamp: timeStamp)])
+    }
+    
+    func test_saveCommand_failsOnDeletionError(){
+        
+        let (sut,store) = makeSUT()
+        let items : [FeedItem] = [uniqueFeedItem(), uniqueFeedItem()]
+        let deletionError = anyError()
+        var recievedError : NSError?
+        
+        let exp = expectation(description: "wait for completion")
+        sut.save(items) { error in
+            if let error = error {
+                recievedError = error as NSError
+            }
+            exp.fulfill()
+        }
+        store.completionDeletion(with: deletionError)
+        
+        wait(for: [exp], timeout: 1)
+        XCTAssertEqual(recievedError, deletionError)
     }
     
     //MARK: helper functions
