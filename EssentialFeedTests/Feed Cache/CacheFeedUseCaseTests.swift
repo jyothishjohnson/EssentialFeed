@@ -58,6 +58,10 @@ class FeedStore {
         cacheDeletionFallbacks[index](nil)
     }
     
+    func completeInsertionSuccessfully(at index: Int = 0){
+        cacheInsertionFallbacks[index](nil)
+    }
+    
     func insert(_ items: [FeedItem], withTimeStamp timeStamp: Date, completion: @escaping InsertionCompletions) {
         cacheInsertionFallbacks.append(completion)
         recievedMessages.append(.insertCacheMessage(items: items, timeStamp: timeStamp))
@@ -146,6 +150,26 @@ class CacheFeedUseCaseTests: XCTestCase {
         
         wait(for: [exp], timeout: 1)
         XCTAssertEqual(recievedError, insertionError)
+    }
+    
+    func test_saveCommand_succeedsOnSuccessfulCacheInsertion(){
+        
+        let (sut,store) = makeSUT()
+        let items : [FeedItem] = [uniqueFeedItem(), uniqueFeedItem()]
+        var recievedError : NSError?
+        
+        let exp = expectation(description: "wait for completion")
+        sut.save(items) { error in
+            if let error = error {
+                recievedError = error as NSError
+            }
+            exp.fulfill()
+        }
+        store.completionDeletionSuccessfully()
+        store.completeInsertionSuccessfully()
+        
+        wait(for: [exp], timeout: 1)
+        XCTAssertNil(recievedError)
     }
     
     //MARK: helper functions
