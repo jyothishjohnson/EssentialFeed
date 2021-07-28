@@ -144,7 +144,7 @@ class CacheFeedUseCaseTests: XCTestCase {
     
     //MARK: helper functions
     
-    func makeSUT(currentDate : @escaping () -> Date = { Date() }, file: StaticString = #filePath, line: UInt = #line) -> (sut: LocalFeedLoader, store: FeedStore) {
+    private func makeSUT(currentDate : @escaping () -> Date = { Date() }, file: StaticString = #filePath, line: UInt = #line) -> (sut: LocalFeedLoader, store: FeedStore) {
         let store = FeedStore()
         let sut = LocalFeedLoader(store: store, currentDate: currentDate)
         
@@ -154,7 +154,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         return (sut,store)
     }
     
-    func expect(_ sut: LocalFeedLoader, toCompleteWithError expectedError: NSError?, when action : () -> (), file: StaticString = #filePath, line: UInt = #line) {
+    private func expect(_ sut: LocalFeedLoader, toCompleteWithError expectedError: NSError?, when action : () -> (), file: StaticString = #filePath, line: UInt = #line) {
         var recievedError : NSError?
 
         let exp = expectation(description: "wait for completion")
@@ -172,12 +172,12 @@ class CacheFeedUseCaseTests: XCTestCase {
         XCTAssertEqual(recievedError, expectedError, file: file, line: line)
     }
     
-    func uniqueFeedItem() -> FeedItem {
+    private func uniqueFeedItem() -> FeedItem {
         
         return FeedItem(id: UUID(), imageURL: anyURL(), desc: nil, location: nil)
     }
     
-    func anyURL() -> URL {
+    private func anyURL() -> URL {
         return URL(string: "https://anyURL.com/\(UUID().uuidString)")!
     }
 
