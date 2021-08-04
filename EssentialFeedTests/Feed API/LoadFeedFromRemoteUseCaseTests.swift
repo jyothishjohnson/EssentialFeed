@@ -96,8 +96,8 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         
         //Given
         let (sut,client) = makeSUT()
-        let item1 = FeedItem(id: UUID(), imageURL: URL(string: "https://url.com")!)
-        let item2 = FeedItem(id: UUID(), imageURL: URL(string: "https://url2.com")!, desc: "description", location: "location")
+        let item1 = FeedImage(id: UUID(), url: URL(string: "https://url.com")!)
+        let item2 = FeedImage(id: UUID(), url: URL(string: "https://url2.com")!, desc: "description", location: "location")
         
         let json = mapToJsonData(with: [item1,item2])
         
@@ -113,7 +113,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         
         let json = mapToJsonData(with: [])
         
-        var capturedResults = [Result<[FeedItem],Error>]()
+        var capturedResults = [Result<[FeedImage],Error>]()
         
         sut?.load { result in
             capturedResults.append(result)
@@ -128,15 +128,15 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     //MARK: helper functions
     
-    private func mapToJsonData(with items: [FeedItem]) -> Data {
+    private func mapToJsonData(with items: [FeedImage]) -> Data {
         
         let response = FeedResponse(items: items.map{ $0.remoteFeedItem })
         return try! JSONEncoder().encode(response)
     }
 
-    private func expect(_ sut: RemoteFeedLoader, toCompleteWithResult expectedResult: Result<[FeedItem],Error>, when action: () -> (), file :StaticString = #filePath, line: UInt = #line){
+    private func expect(_ sut: RemoteFeedLoader, toCompleteWithResult expectedResult: Result<[FeedImage],Error>, when action: () -> (), file :StaticString = #filePath, line: UInt = #line){
         
-        var capturedResults = [Result<[FeedItem],Error>]()
+        var capturedResults = [Result<[FeedImage],Error>]()
         
         let exp = expectation(description: "Wait for load completion")
         
@@ -176,7 +176,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         .failure(error)
     }
     
-    private func success(_ items : [FeedItem]) -> LoadFeedResult {
+    private func success(_ items : [FeedImage]) -> LoadFeedResult {
         .success(items)
     }
     

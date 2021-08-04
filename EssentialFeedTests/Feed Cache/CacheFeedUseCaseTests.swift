@@ -147,7 +147,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         
         enum RecievedMessage: Equatable {
             case deleteCacheMessage
-            case insertCacheMessage(items: [LocalFeedItem], timeStamp: Date)
+            case insertCacheMessage(items: [LocalFeedImage], timeStamp: Date)
         }
         
         typealias DeletionCompletions = ((Error?) -> ())
@@ -160,6 +160,11 @@ class CacheFeedUseCaseTests: XCTestCase {
         func deleteCachedFeed(completion : @escaping DeletionCompletions){
             recievedMessages.append(.deleteCacheMessage)
             cacheDeletionFallbacks.append(completion)
+        }
+        
+        func insert(_ feed: [LocalFeedImage], withTimeStamp timeStamp: Date, completion: @escaping InsertionCompletions) {
+            cacheInsertionFallbacks.append(completion)
+            recievedMessages.append(.insertCacheMessage(items: feed, timeStamp: timeStamp))
         }
         
         func completionDeletion(at index: Int = 0, with error: Error) {
@@ -177,21 +182,16 @@ class CacheFeedUseCaseTests: XCTestCase {
         func completeInsertionSuccessfully(at index: Int = 0){
             cacheInsertionFallbacks[index](nil)
         }
-        
-        func insert(_ items: [LocalFeedItem], withTimeStamp timeStamp: Date, completion: @escaping InsertionCompletions) {
-            cacheInsertionFallbacks.append(completion)
-            recievedMessages.append(.insertCacheMessage(items: items, timeStamp: timeStamp))
-        }
     }
     
-    private func uniqueFeedItem() -> FeedItem {
+    private func uniqueFeedItem() -> FeedImage {
         
-        return FeedItem(id: UUID(), imageURL: anyURL(), desc: nil, location: nil)
+        return FeedImage(id: UUID(), url: anyURL(), desc: nil, location: nil)
     }
     
-    private func uniqueItems() -> (models: [FeedItem], local: [LocalFeedItem]){
+    private func uniqueItems() -> (models: [FeedImage], local: [LocalFeedImage]){
         let items = [uniqueFeedItem(), uniqueFeedItem()]
-        let localItems = items.map{ LocalFeedItem(id: $0.id, imageURL: $0.imageURL, desc: $0.description, location: $0.description) }
+        let localItems = items.map{ LocalFeedImage(id: $0.id, url: $0.url, desc: $0.description, location: $0.description) }
         
         return (items, localItems)
     }
