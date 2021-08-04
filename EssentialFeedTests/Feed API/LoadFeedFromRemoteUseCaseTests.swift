@@ -96,12 +96,12 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         
         //Given
         let (sut,client) = makeSUT()
-        let item1 = Item(id: UUID(), image: URL(string: "https://url.com")!)
-        let item2 = Item(id: UUID(), image: URL(string: "https://url2.com")!, desc: "description", location: "location")
+        let item1 = FeedItem(id: UUID(), imageURL: URL(string: "https://url.com")!)
+        let item2 = FeedItem(id: UUID(), imageURL: URL(string: "https://url2.com")!, desc: "description", location: "location")
         
         let json = mapToJsonData(with: [item1,item2])
         
-        expect(sut, toCompleteWithResult: success([item1.feedItem,item2.feedItem])) {
+        expect(sut, toCompleteWithResult: success([item1,item2])) {
             let feedItems = json
             client.complete(withStatusCode: 200, data: feedItems)
         }
@@ -128,9 +128,9 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     //MARK: helper functions
     
-    private func mapToJsonData(with items: [Item]) -> Data {
+    private func mapToJsonData(with items: [FeedItem]) -> Data {
         
-        let response = FeedResponse(items: items)
+        let response = FeedResponse(items: items.map{ $0.remoteFeedItem })
         return try! JSONEncoder().encode(response)
     }
 

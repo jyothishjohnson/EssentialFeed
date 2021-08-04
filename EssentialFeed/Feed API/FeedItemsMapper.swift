@@ -13,31 +13,25 @@ internal struct FeedItemsMapper {
         case OK_200 = 200
     }
     
-    internal static func map(with data: Data, response: HTTPURLResponse) -> Result<[FeedItem],Error> {
+    internal static func map(with data: Data, response: HTTPURLResponse) throws -> [RemoteFeedItem] {
         guard response.statusCode == ResponseCode.OK_200.rawValue,
               let rootResponse = try? JSONDecoder().decode(FeedResponse.self, from: data)
               else {
-            return .failure(RemoteFeedLoader.Error.invalidData)
+            throw RemoteFeedLoader.Error.invalidData
         }
-        
-        return .success(rootResponse.feed)
-        
+        return rootResponse.items
     }
 }
 
 public struct FeedResponse: Codable{
-    public let items : [Item]
+    public let items : [RemoteFeedItem]
     
-    var feed: [FeedItem] {
-        return items.map{ $0.feedItem }
-    }
-    
-    public init(items: [Item] = []){
+    public init(items: [RemoteFeedItem] = []){
         self.items = items
     }
 }
 
-public struct Item: Codable {
+public struct RemoteFeedItem: Codable {
     public let id : UUID
     public let image : URL
     public let description : String?
@@ -48,9 +42,5 @@ public struct Item: Codable {
         self.image = image
         self.description = desc
         self.location = location
-    }
-    
-    public var feedItem : FeedItem {
-        return FeedItem(id: id, imageURL: image, desc: description, location: location)
     }
 }

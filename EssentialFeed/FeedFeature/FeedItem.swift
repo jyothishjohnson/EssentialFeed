@@ -19,4 +19,8 @@ public struct FeedItem: Equatable, Codable {
         self.description = desc
         self.location = location
     }
+    
+    public var remoteFeedItem : RemoteFeedItem {
+        RemoteFeedItem(id: self.id, image: self.imageURL, desc: self.description, location: self.location)
+    }
 }
