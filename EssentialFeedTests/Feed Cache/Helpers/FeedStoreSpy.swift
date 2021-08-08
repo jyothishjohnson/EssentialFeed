@@ -59,4 +59,8 @@ final class FeedStoreSpy: FeedStore {
     func completeRetrieval(at index: Int = 0, with error: Error) {
         cacheRetrievalFallbacks[index](error)
     }
+    
+    func completeRetrievalWithEmptyCache(at index: Int = 0){
+        cacheRetrievalFallbacks[index](nil)
+    }
 }
