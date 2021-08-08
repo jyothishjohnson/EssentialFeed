@@ -18,10 +18,12 @@ final class FeedStoreSpy: FeedStore {
     
     typealias DeletionCompletions = ((Error?) -> ())
     typealias InsertionCompletions = ((Error?) -> ())
-    
+    typealias RetrievalCompletions = (Error?) -> ()
+
     private(set) var recievedMessages = [RecievedMessage]()
     private var cacheDeletionFallbacks = [DeletionCompletions]()
     private var cacheInsertionFallbacks = [InsertionCompletions]()
+    private var cacheRetrievalFallbacks = [InsertionCompletions]()
     
     func deleteCachedFeed(completion : @escaping DeletionCompletions){
         recievedMessages.append(.deleteCacheMessage)
@@ -33,7 +35,8 @@ final class FeedStoreSpy: FeedStore {
         recievedMessages.append(.insertCacheMessage(items: feed, timeStamp: timeStamp))
     }
     
-    func retriveCache() {
+    func retriveCache(completion : @escaping RetrievalCompletions) {
+        cacheRetrievalFallbacks.append(completion)
         recievedMessages.append(.retriveCache)
     }
     
@@ -51,5 +54,9 @@ final class FeedStoreSpy: FeedStore {
     
     func completeInsertionSuccessfully(at index: Int = 0){
         cacheInsertionFallbacks[index](nil)
+    }
+    
+    func completeRetrieval(at index: Int = 0, with error: Error) {
+        cacheRetrievalFallbacks[index](error)
     }
 }
