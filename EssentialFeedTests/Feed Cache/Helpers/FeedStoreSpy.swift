@@ -13,6 +13,7 @@ final class FeedStoreSpy: FeedStore {
     enum RecievedMessage: Equatable {
         case deleteCacheMessage
         case insertCacheMessage(items: [LocalFeedImage], timeStamp: Date)
+        case retriveCache
     }
     
     typealias DeletionCompletions = ((Error?) -> ())
@@ -30,6 +31,10 @@ final class FeedStoreSpy: FeedStore {
     func insert(_ feed: [LocalFeedImage], withTimeStamp timeStamp: Date, completion: @escaping InsertionCompletions) {
         cacheInsertionFallbacks.append(completion)
         recievedMessages.append(.insertCacheMessage(items: feed, timeStamp: timeStamp))
+    }
+    
+    func retriveCache() {
+        recievedMessages.append(.retriveCache)
     }
     
     func completionDeletion(at index: Int = 0, with error: Error) {
