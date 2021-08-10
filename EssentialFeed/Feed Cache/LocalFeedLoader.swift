@@ -12,6 +12,9 @@ public final class LocalFeedLoader {
     public typealias SaveResult = Error?
     public typealias LoadResult = Swift.Result<[FeedImage],Error>
     
+    private let MAX_CACHE_AGE_IN_DAYS = 7
+    private let calender = Calendar(identifier: .gregorian)
+    
     private let store : FeedStore
     private let currentDate : () -> Date
     
@@ -39,7 +42,8 @@ public final class LocalFeedLoader {
             case let .failure(error):
                 completion(.failure(error))
                             
-            case let .found(feed, timeStamp) where timeStamp.isValid(maxAgeInDays: 7, currentDate: currentDate()):
+            case let .found(feed, timeStamp) where timeStamp
+                    .isValid(maxAgeInDays: MAX_CACHE_AGE_IN_DAYS, currentDate: currentDate(), using: calender):
                 completion(.success(feed.toModels()))
                 
             case .empty, .found:
@@ -59,8 +63,8 @@ public final class LocalFeedLoader {
 
 private extension Date {
     
-    func isValid(maxAgeInDays: Int, currentDate: Date) -> Bool {
-        guard let maxDate = Calendar(identifier: .gregorian)
+    func isValid(maxAgeInDays: Int, currentDate: Date, using calender: Calendar) -> Bool {
+        guard let maxDate = calender
                 .date(byAdding: .day, value: maxAgeInDays, to: self) else {
             return false
         }
