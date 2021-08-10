@@ -16,14 +16,14 @@ final class FeedStoreSpy: FeedStore {
         case retriveCache
     }
     
-    typealias DeletionCompletions = ((Error?) -> ())
-    typealias InsertionCompletions = ((Error?) -> ())
-    typealias RetrievalCompletions = (Error?) -> ()
+//    typealias DeletionCompletions = ((Error?) -> ())
+//    typealias InsertionCompletions = ((Error?) -> ())
+//    typealias RetrievalCompletions = () -> ()
 
     private(set) var recievedMessages = [RecievedMessage]()
     private var cacheDeletionFallbacks = [DeletionCompletions]()
     private var cacheInsertionFallbacks = [InsertionCompletions]()
-    private var cacheRetrievalFallbacks = [InsertionCompletions]()
+    private var cacheRetrievalFallbacks = [RetrievalCompletions]()
     
     func deleteCachedFeed(completion : @escaping DeletionCompletions){
         recievedMessages.append(.deleteCacheMessage)
@@ -57,10 +57,14 @@ final class FeedStoreSpy: FeedStore {
     }
     
     func completeRetrieval(at index: Int = 0, with error: Error) {
-        cacheRetrievalFallbacks[index](error)
+        cacheRetrievalFallbacks[index](.failure(error))
     }
     
     func completeRetrievalWithEmptyCache(at index: Int = 0){
-        cacheRetrievalFallbacks[index](nil)
+        cacheRetrievalFallbacks[index](.empty)
+    }
+    
+    func completeRetrieval(with feed: [LocalFeedImage], timeStamp: Date, at index: Int = 0){
+        cacheRetrievalFallbacks[index](.found(feed: feed, timeStamp: timeStamp))
     }
 }
