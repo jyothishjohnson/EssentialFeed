@@ -47,7 +47,11 @@ public final class LocalFeedLoader {
                     .isValid(maxAgeInDays: MAX_CACHE_AGE_IN_DAYS, currentDate: currentDate(), using: calender):
                 completion(.success(feed.toModels()))
                 
-            case .empty, .found:
+            case .found:
+                store.deleteCachedFeed(completion: { _ in })
+                completion(.success([]))
+                
+            case .empty:
                 completion(.success([]))
             }
         }
