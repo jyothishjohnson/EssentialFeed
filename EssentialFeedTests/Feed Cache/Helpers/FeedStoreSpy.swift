@@ -15,10 +15,6 @@ final class FeedStoreSpy: FeedStore {
         case insertCacheMessage(items: [LocalFeedImage], timeStamp: Date)
         case retriveCache
     }
-    
-//    typealias DeletionCompletions = ((Error?) -> ())
-//    typealias InsertionCompletions = ((Error?) -> ())
-//    typealias RetrievalCompletions = () -> ()
 
     private(set) var recievedMessages = [RecievedMessage]()
     private var cacheDeletionFallbacks = [DeletionCompletions]()
