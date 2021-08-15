@@ -7,11 +7,6 @@
 
 import Foundation
 
-private final class FeedCachePolicy{
-    private init(){}
-    static let MAX_CACHE_AGE_IN_DAYS = 7
-}
-
 public final class LocalFeedLoader {
         
     private let calender = Calendar(identifier: .gregorian)
