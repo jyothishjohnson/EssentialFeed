@@ -8,7 +8,8 @@
 import Foundation
 
 private final class FeedCachePolicy{
-    let MAX_CACHE_AGE_IN_DAYS = 7
+    private init(){}
+    static let MAX_CACHE_AGE_IN_DAYS = 7
 }
 
 public final class LocalFeedLoader {
@@ -17,12 +18,10 @@ public final class LocalFeedLoader {
     
     private let store : FeedStore
     private let currentDate : () -> Date
-    private let cachePolicy : FeedCachePolicy
     
     public init(store: FeedStore, currentDate: @escaping () -> Date) {
         self.store = store
         self.currentDate = currentDate
-        self.cachePolicy = FeedCachePolicy()
     }
 }
 
@@ -65,7 +64,7 @@ extension LocalFeedLoader: FeedLoader {
                 completion(.failure(error))
                             
             case let .found(feed, timeStamp) where timeStamp
-                    .isValid(maxAgeInDays: self.cachePolicy.MAX_CACHE_AGE_IN_DAYS, currentDate: self.currentDate(), using: self.calender):
+                    .isValid(maxAgeInDays: FeedCachePolicy.MAX_CACHE_AGE_IN_DAYS, currentDate: self.currentDate(), using: self.calender):
                 completion(.success(feed.toModels()))
                 
             case .empty,.found:
@@ -84,7 +83,7 @@ extension LocalFeedLoader {
             case .failure:
                 self.store.deleteCachedFeed { _ in }
             case let .found(_, timeStamp) where !timeStamp
-                    .isValid(maxAgeInDays: self.cachePolicy.MAX_CACHE_AGE_IN_DAYS, currentDate: self.currentDate(), using: self.calender):
+                    .isValid(maxAgeInDays: FeedCachePolicy.MAX_CACHE_AGE_IN_DAYS, currentDate: self.currentDate(), using: self.calender):
                 self.store.deleteCachedFeed { _ in }
             default:
                 break
