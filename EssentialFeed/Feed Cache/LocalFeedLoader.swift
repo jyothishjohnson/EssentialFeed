@@ -8,10 +8,7 @@
 import Foundation
 
 public final class LocalFeedLoader {
-    
-    public typealias SaveResult = Error?
-    public typealias LoadResult = Swift.Result<[FeedImage],Error>
-    
+        
     private let MAX_CACHE_AGE_IN_DAYS = 7
     private let calender = Calendar(identifier: .gregorian)
     
@@ -25,6 +22,9 @@ public final class LocalFeedLoader {
 }
 
 extension LocalFeedLoader {
+    
+    public typealias SaveResult = Error?
+
     public func save(_ feed: [FeedImage], completion : @escaping (SaveResult) -> ()) {
         store.deleteCachedFeed{ [weak self] error in
             
@@ -47,6 +47,9 @@ extension LocalFeedLoader {
 }
     
 extension LocalFeedLoader: FeedLoader {
+    
+    public typealias LoadResult = Swift.Result<[FeedImage],Error>
+
     public func load(completion : @escaping (LoadResult) -> ()){
         store.retriveCache{ [weak self] result in
             
