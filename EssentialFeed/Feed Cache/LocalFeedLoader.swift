@@ -50,7 +50,6 @@ public final class LocalFeedLoader {
                 completion(.success(feed.toModels()))
                 
             case .found:
-                self.store.deleteCachedFeed { _ in }
                 completion(.success([]))
                 
             case .empty:
@@ -63,6 +62,9 @@ public final class LocalFeedLoader {
         store.retriveCache { [unowned self] result in
             switch result {
             case .failure:
+                store.deleteCachedFeed { _ in }
+            case let .found(_, timeStamp) where !timeStamp
+                    .isValid(maxAgeInDays: self.MAX_CACHE_AGE_IN_DAYS, currentDate: self.currentDate(), using: self.calender):
                 store.deleteCachedFeed { _ in }
             default:
                 break
