@@ -51,7 +51,7 @@ public final class LocalFeedLoader {
                 completion(.success(feed.toModels()))
                 
             case .found:
-                self.store.deleteCachedFeed(completion: { _ in })
+                self.store.deleteCachedFeed { _ in }
                 completion(.success([]))
                 
             case .empty:
