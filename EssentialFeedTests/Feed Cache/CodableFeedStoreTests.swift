@@ -76,7 +76,7 @@ class CodableFeedStoreTests: XCTestCase {
     
     func test_retrieve_deliversEmptyOnEmptyCache(){
         
-        let sut = CodableFeedStore()
+        let sut = makeSUT()
         
         let exp = expectation(description: "wait for completion")
         
@@ -97,7 +97,7 @@ class CodableFeedStoreTests: XCTestCase {
     
     func test_retrieve_hasNoSideEffectsOnEmptyCache(){
         
-        let sut = CodableFeedStore()
+        let sut = makeSUT()
         
         let exp = expectation(description: "wait for completion")
         
@@ -119,7 +119,7 @@ class CodableFeedStoreTests: XCTestCase {
     
     func test_retrieveAfterInsertingToCache_deliversInsertedValues(){
         
-        let sut = CodableFeedStore()
+        let sut = makeSUT()
         let feed = uniqueItems().local
         let timeStamp = Date()
         let exp = expectation(description: "wait for completion")
@@ -144,5 +144,11 @@ class CodableFeedStoreTests: XCTestCase {
         }
         
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    //MARK: helper functions
+    
+    private func makeSUT() -> CodableFeedStore {
+        return CodableFeedStore()
     }
 }
