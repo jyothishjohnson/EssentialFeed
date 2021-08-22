@@ -58,11 +58,15 @@ final class CodableFeedStore{
     }
     
     func insert(_ feed: [LocalFeedImage], withTimeStamp timeStamp: Date, completion: @escaping FeedStore.InsertionCompletions){
-        let encoder = JSONEncoder()
-        let cache = Cache(feed: feed.map(CodableFeedImage.init), timeStamp: timeStamp)
-        let encoded = try! encoder.encode(cache)
-        try! encoded.write(to: storeURL)
-        completion(nil)
+        do {
+            let encoder = JSONEncoder()
+            let cache = Cache(feed: feed.map(CodableFeedImage.init), timeStamp: timeStamp)
+            let encoded = try encoder.encode(cache)
+            try encoded.write(to: storeURL)
+            completion(nil)
+        }catch {
+            completion(error)
+        }
     }
 }
 
@@ -149,6 +153,18 @@ class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrive: .found(feed: feed, timeStamp: timeStamp))
     }
     
+    func test_insert_deliversErrorOnInsertionError() {
+        let invalidStoreURL = URL(string: "invalid://store-url")!
+        let sut = makeSUT(storeURL: invalidStoreURL)
+        let feed = uniqueItems().local
+        let timestamp = Date()
+        
+        let insertionError = insert((feed, timestamp), to: sut)
+        
+        XCTAssertNotNil(insertionError, "Expected cache insertion to fail with an error")
+        expect(sut, toRetrive: .empty)
+    }
+    
     //MARK: helper functions
     
     private func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
@@ -193,9 +209,8 @@ class CodableFeedStoreTests: XCTestCase {
         let exp = expectation(description: "Wait for cache insertion")
         var recievedError : Error?
         sut.insert(cache.feed, withTimeStamp: cache.timestamp) { insertionError in
-            XCTAssertNil(insertionError, "Expected feed to be inserted successfully")
-            exp.fulfill()
             recievedError = insertionError
+            exp.fulfill()
         }
         wait(for: [exp], timeout: 1.0)
         return recievedError
