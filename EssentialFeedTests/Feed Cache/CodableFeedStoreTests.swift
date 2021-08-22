@@ -68,6 +68,15 @@ final class CodableFeedStore{
             completion(error)
         }
     }
+    
+    func deleteCachedFeed(completion: @escaping FeedStore.DeletionCompletions) {
+        guard FileManager.default.fileExists(atPath: storeURL.path) else {
+            return completion(nil)
+        }
+        
+        try! FileManager.default.removeItem(at: storeURL)
+        completion(nil)
+    }
 }
 
 class CodableFeedStoreTests: XCTestCase {
@@ -88,7 +97,7 @@ class CodableFeedStoreTests: XCTestCase {
         
         let sut = makeSUT()
         
-        expect(sut, toRetrive: .empty)
+        expect(sut, toRetrieve: .empty)
     }
     
     func test_retrieve_hasNoSideEffectsOnEmptyCache(){
@@ -106,7 +115,7 @@ class CodableFeedStoreTests: XCTestCase {
         
         insert((feed,timeStamp), to: sut)
         
-        expect(sut, toRetrive: .found(feed: feed, timeStamp: timeStamp))
+        expect(sut, toRetrieve: .found(feed: feed, timeStamp: timeStamp))
     }
     
     func test_retrieve_hasNoSideEffects_OnNonEmptyCache(){
@@ -126,7 +135,7 @@ class CodableFeedStoreTests: XCTestCase {
         
         try! "invalid data".write(to: storeURL, atomically: false, encoding: .utf8)
         
-        expect(sut, toRetrive: .failure(anyError()))
+        expect(sut, toRetrieve: .failure(anyError()))
     }
     
     func test_retrieve_hasNoSideEffectsOnFailure() {
@@ -150,7 +159,7 @@ class CodableFeedStoreTests: XCTestCase {
         let secondInsertionError = insert((feed,timeStamp), to: sut)
         XCTAssertNil(secondInsertionError,"Expected no errors while second insertion")
         
-        expect(sut, toRetrive: .found(feed: feed, timeStamp: timeStamp))
+        expect(sut, toRetrieve: .found(feed: feed, timeStamp: timeStamp))
     }
     
     func test_insert_deliversErrorOnInsertionError() {
@@ -162,7 +171,38 @@ class CodableFeedStoreTests: XCTestCase {
         let insertionError = insert((feed, timestamp), to: sut)
         
         XCTAssertNotNil(insertionError, "Expected cache insertion to fail with an error")
-        expect(sut, toRetrive: .empty)
+        expect(sut, toRetrieve: .empty)
+    }
+    
+    func test_delete_hasNoSideEffectsOnEmptyCache() {
+        let sut = makeSUT()
+        let exp = expectation(description: "Wait for cache deletion")
+        
+        sut.deleteCachedFeed { deletionError in
+            XCTAssertNil(deletionError, "Expected empty cache deletion to succeed")
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+
+        expect(sut, toRetrieve: .empty)
+    }
+    
+    func test_delete_emptiesPreviouslyInsertedCache() {
+        let sut = makeSUT()
+        let feed = uniqueItems().local
+        let timeStamp = Date()
+        insert((feed, timeStamp), to: sut)
+        
+        expect(sut, toRetrieve: .found(feed: feed, timeStamp: timeStamp))
+        
+        let exp = expectation(description: "Wait for cache deletion")
+        sut.deleteCachedFeed { deletionError in
+            XCTAssertNil(deletionError, "Expected non-empty cache deletion to succeed")
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+        
+        expect(sut, toRetrieve: .empty)
     }
     
     //MARK: helper functions
@@ -174,7 +214,7 @@ class CodableFeedStoreTests: XCTestCase {
         return sut
     }
     
-    private func expect(_ sut: CodableFeedStore, toRetrive expectedResult: RetriveCachedFeedResult,
+    private func expect(_ sut: CodableFeedStore, toRetrieve expectedResult: RetriveCachedFeedResult,
                         file: StaticString = #file, line: UInt = #line){
         let exp = expectation(description: "wait for cache retrival")
         
@@ -199,8 +239,8 @@ class CodableFeedStoreTests: XCTestCase {
     
     private func expect(_ sut: CodableFeedStore, toRetriveTwice expectedResult: RetriveCachedFeedResult,
                         file: StaticString = #file, line: UInt = #line){
-        expect(sut, toRetrive: expectedResult, file: file, line: line)
-        expect(sut, toRetrive: expectedResult, file: file, line: line)
+        expect(sut, toRetrieve: expectedResult, file: file, line: line)
+        expect(sut, toRetrieve: expectedResult, file: file, line: line)
     }
     
     @discardableResult
