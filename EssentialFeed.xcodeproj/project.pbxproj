@@ -631,6 +631,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jyo.ed.EssentialFeedAPIEndToEndTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -649,6 +650,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jyo.ed.EssentialFeedAPIEndToEndTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
