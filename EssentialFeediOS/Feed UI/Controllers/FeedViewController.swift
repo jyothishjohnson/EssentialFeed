@@ -10,13 +10,9 @@ import EssentialFeed
 
 final public class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
     private var refreshController: FeedRefreshViewController?
-    private var imageLoader: FeedImageDataLoader?
     var tableModel = [FeedImageCellController]() {
-        didSet{
-            tableView.reloadData()
-        }
+        didSet{ tableView.reloadData() }
     }
-    private var cellControllers = [IndexPath: FeedImageCellController]()
     
     convenience init(refreshController: FeedRefreshViewController) {
         self.init()
@@ -25,7 +21,6 @@ final public class FeedViewController: UITableViewController, UITableViewDataSou
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
         tableView.prefetchDataSource = self
         refreshControl = refreshController?.view
         refreshController?.refresh()
